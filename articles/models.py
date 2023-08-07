@@ -1,5 +1,5 @@
 from django.db import models
-from common.models.core import CoreModel
+from core.models.core import CoreModel
 from tags.models import Tag
 from django.contrib.auth.models import User
 
