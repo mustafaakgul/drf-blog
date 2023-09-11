@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 
 from pathlib import Path
+
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,18 +31,39 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-# Application definition
-
+# Application Definition
 INSTALLED_APPS = [
+    # Built-in
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    # Apps
+    "accounts",
+    "comments",
+    "favourites",
+
+    # Third-party
+    "rest_framework",
+    'drf_yasg',
+    'corsheaders',
+    "rest_auth",
+    "rest_framework.authtoken",
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
+    # CORS
+    'corsheaders.middleware.CorsMiddleware',
+
+    # Built-in
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -104,6 +128,8 @@ TIME_ZONE = "UTC"
 
 USE_I18N = True
 
+# USE_L10N = True
+
 USE_TZ = True
 
 
@@ -112,13 +138,126 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+# STATICFILES_DIRS = [
+#     BASE_DIR / "static",
+#     '/var/www/static/',
+# ]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media") # production icin
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-# Versioning
+# Rest Framework
 REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning'
+}
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    ],
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.ScopedRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'registerthrottle': '15/hour',
+        'postlistuserthrottle' : '16/hour',
+        'hasan' : '19/hour'
+    }
+}
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME' : timedelta(minutes=60)
+}
+
+
+# drf-yasg
+SWAGGER_SETTINGS = {
+    'VALIDATOR_URL': 'http://127.0.0.1:8000',
+    'LOGIN_URL': reverse_lazy('admin:login'),
+    'LOGOUT_URL': '/admin/logout',
+    'PERSIST_AUTH': True,
+    'REFETCH_SCHEMA_WITH_AUTH': True,
+    'REFETCH_SCHEMA_ON_LOGOUT': True,
+
+    'DEFAULT_INFO': 'testproj.urls.swagger_info',
+
+    'SECURITY_DEFINITIONS': {
+        'Basic': {
+            'type': 'basic'
+        },
+        'Bearer': {
+            'in': 'header',
+            'name': 'Authorization',
+            'type': 'apiKey',
+        },
+        'Query': {
+            'in': 'query',
+            'name': 'auth',
+            'type': 'apiKey',
+        },
+    },
+    "DEFAULT_PAGINATOR_INSPECTORS": [
+        'testproj.inspectors.UnknownPaginatorInspector',
+        'drf_yasg.inspectors.DjangoRestResponsePagination',
+        'drf_yasg.inspectors.CoreAPICompatInspector',
+    ]
+}
+
+REDOC_SETTINGS = {
+    'SPEC_URL': ('schema-json', {'format': '.json'}),
+}
+
+
+AUTHENTICATION_BACKENDS =(
+    #'accounts.backends.EmailBackend',
+    'accounts.backends.EmailAuthBackend',
+    'django.contrib.auth.backends.AllowAllUsersModelBackend'
+)
+
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        "rest_framework.permissions.AllowAny"
+    ]
+}
+
+#CORS_ALLOWED_ORIGINS = [
+#    "http://localhost:3000/"
+#]
+
+CORS_ALLOW_ALL_ORIGINS=True
+
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_AUTHENTICATION_METHOD = "username"
+ACCOUNT_EMAIL_REQUIRED = False
+
+
+# API Definitions
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    ],
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.ScopedRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'registerthrottle': '15/hour',
+        #'hasan' : '5/hour'
+    }
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME' : timedelta(minutes=15)
 }
