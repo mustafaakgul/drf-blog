@@ -1,17 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import reverse
-from django.db.models.signals import post_save
+
+from django.db.models.signals import post_save # her kaytta otomatk olusmasi icin yani kullanici kydnda bnnda olsmasi icin
+from django.dispatch import receiver #buda kayt tetklemesi
 
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, null=True, blank=False, verbose_name='User')
+class Profile(models.Model):
+    user = models.OneToOneField(User, null=True, blank=False, verbose_name='User', on_delete=models.CASCADE)
     bio = models.TextField(max_length=5000, blank=True, null=True)
     profile_photo = models.ImageField(null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
+    instagram = models.CharField(max_length=200, null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = 'Kullanici Profilleri'
+        verbose_name_plural = 'User Profiles'
 
     def get_screen_name(self):
         user = self.user
@@ -37,8 +40,23 @@ class UserProfile(models.Model):
         return "%s Profile" % (self.get_screen_name())
 
 
+@receiver(post_save, sender=User) #user olustugu anda bu modelde olsutursun
 def create_profile(sender, created, instance, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance)
+    if not created:
+        return
+    Profile.objects.create(user=instance)
+    instance.profile.save()
 
-post_save.connect(create_profile,sender=User)
+
+# AbstractUser
+# from django.contrib.auth.models import AbstractUser
+# class CustomUserModel(AbstractUser):
+#     avatar = models.ImageField(upload_to='avatar/', blank=True, null=True)
+#
+#     class Meta:
+#         db_table = 'user'
+#         verbose_name = 'Kullanıcı'
+#         verbose_name_plural = 'Kullanıcılar'
+#
+#     def __str__(self):
+#         return self.username
