@@ -1,8 +1,10 @@
 from django.urls import path, include
+from comments.api.views import *
 
-from django.urls import path
-from comment.api.views import *
-app_name = "comment"
+
+app_name = "comments"
+
+
 urlpatterns = [
     path('create', CommentCreateAPIView.as_view(), name='create'),
     path('list', CommentListAPIView.as_view(), name='list'),

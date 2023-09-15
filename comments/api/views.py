@@ -7,10 +7,11 @@ from rest_framework.generics import \
     RetrieveUpdateAPIView
 from rest_framework.mixins import UpdateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
-from comment.api.pagination import CommentPagination
-from comment.models import Comment
-from comment.api.serializers import *
-from comment.api.permissions import IsOwner
+from comments.api.pagination import CommentPagination
+from comments.models import Comment
+from comments.api.serializers import *
+from comments.api.permissions import IsOwner
+
 
 class CommentCreateAPIView(CreateAPIView):
     queryset = Comment.objects.all()
@@ -21,18 +22,12 @@ class CommentCreateAPIView(CreateAPIView):
         serializer.save(user = self.request.user)
 
 
-#bu normal bütün commentleri getiri api/comment/list?q=12    12. post a ait yorumlar buu yapcaksn
-#onceki ve sonraki dicem byle degiscek
-"""
-class CommentListAPIView(ListAPIView):
-    serializer_class = CommentListSerializer
-
-    def get_queryset(self):
-        return Comment.objects.filter(parent = None)
-"""
+#bu normal bütün commentleri getiri api/comment/list?q=12
+# get queryparam -> 12. post a ait yorumlar
 class CommentListAPIView(ListAPIView):
     serializer_class = CommentListSerializer
     pagination_class = CommentPagination
+
     def get_queryset(self):
         queryset = Comment.objects.filter(parent = None)
         query = self.request.GET.get("q")  #sonuna q koyma q yakalamak icin
@@ -53,20 +48,12 @@ class CommentList4CommentAPIView(ListAPIView):
         return queryset
 
 
-
-"""
-class CommentListAPIView(ListAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentListSerializer
-
-
-"""
-
 class CommentDeleteAPIView(DestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentDeleteUpdateSerializer
     lookup_field = "pk"
     permission_classes = [IsOwner]
+
 
 """
 #update and delete class modal mixin http://127.0.0.1:8000/api/comment/delete/8
