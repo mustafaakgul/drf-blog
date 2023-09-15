@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import Comment
+from articles.models import Article
 
 
-admin.site.register(Comment)
+# admin.site.register(Article)
+
+
+@admin.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = ('author', 'title',)
+    search_fields = ('title',)

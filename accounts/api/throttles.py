@@ -27,7 +27,7 @@ class RegisterThrottle(AnonRateThrottle):
 # bunu postlist api postda kllncam
 # bunda kullanıcı grisi yap dene engeli ye snra logout yap misafr oldn ordan tekrr greresen tekrr 6 kre istek atablrsn snra
 # gene engellnr
-class PostListUserThrottle(UserRateThrottle):
+class ArticleListUserThrottle(UserRateThrottle):
     scope = 'postlistuserthrottle'
     # ana kullanrsan bu sklde grs ypmamıs kullanıcıda ip adresini al drek engeli bsyr
     # bu istek get veya post olablr
