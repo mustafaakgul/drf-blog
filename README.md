@@ -1,1 +1,1 @@
-pip install -r requirements/dev.txt
+### Building a blog with this customizable Django Rest Framework project
